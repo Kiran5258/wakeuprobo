@@ -1,0 +1,84 @@
+@import "tailwindcss";
+
+
+.btn{
+    height: 25px;
+    width: 25px;
+    position: relative;
+    transition: all .5s;
+}
+.hamburger-top,
+.hamburger-middle,
+.hamburger-bottom{
+    content: "";
+    position: absolute;
+    width: 24px;
+    height: 4px;
+    background: #FFF;
+    top: 0;
+    left: 0;
+    transform: rotate(0);
+    transition: all 0.5s;
+}
+.hamburger-middle{
+    transform: translateY(7px);
+}
+.hamburger-bottom{
+    transform: translateY(14px);
+}
+.open .hamburger-top{
+    transform: rotate(45deg) translateY(6px) translateX(6px);
+}
+.open .hamburger-middle{
+    display: none;
+}
+.open .hamburger-bottom{
+    transform: rotate(-45deg) translateX(-6px) translateY(6px);
+}
+.ql-editor{
+    font-size: 1.6rem;
+}
+
+.poststyle p {
+    margin-bottom: 1.5rem;
+}
+
+.poststyle h1 {
+    margin: 1.4rem 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    font-family: sans-serif;
+}
+
+.poststyle h2 {
+    margin: 1.2rem 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+    font-family: sans-serif;
+}
+
+.poststyle h3 {
+    margin: 1rem 0;
+    font-size: 1.2rem;
+    font-weight: 500;
+    font-family: sans-serif;
+}
+
+.poststyle a {
+    color: rgb(74, 169, 233);
+    text-decoration: none;
+}
+
+.poststyle a:hover {
+    text-decoration: underline;
+}
+
+.ql-syntax {
+    background: #f4f4f4;
+    padding: 1rem;
+    border-radius: 5px;
+    overflow-x: auto;
+    font-family: monospace;
+    font-size: 0.95rem;
+}
+
