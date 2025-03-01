@@ -9,16 +9,12 @@ export default function Profilesidebar() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
-  const [tab, setTab] = useState("");
-  const urlParams = new URLSearchParams(location.search);
-  const postslug = urlParams.get("postslug"); 
-
+  const [tab, setTab] = useState("profile");
   useEffect(() => {
-    const tabParam = urlParams.get("tab");
-    setTab(tabParam || "profile"); 
+    const urlParams = new URLSearchParams(location.search);
+    setTab(urlParams.get("tab") || "profile");
   }, [location.search]);
 
-  
   const handleSignOut = async () => {
     try {
       const res = await fetch("/server/user/signout", { method: "POST" });
@@ -35,22 +31,47 @@ export default function Profilesidebar() {
   };
 
   return (
-    <div className="w-full md:w-64 md:h-full h-64 bg-gray-800 text-white flex flex-col">
+    <div className="w-full md:w-64 md:h-full border-r-2 bg-white text-black flex flex-col">
       <nav className="flex-grow mt-4">
         <ul>
-          <SidebarLink to="/Profile?tab=profile" icon="fas fa-user" label="Profile" active={tab === "profile"}>
-            <span className="ml-auto bg-gray-600 text-xs px-2 py-1 rounded">
+          <SidebarLink
+            to="/Profile?tab=profile"
+            icon="fas fa-user"
+            label="Profile"
+            active={tab === "profile"}
+          >
+            <span className="ml-auto bg-gray-100 text-xs px-2 py-1 rounded">
               {user.isAuth ? "Admin" : "User"}
             </span>
           </SidebarLink>
+
           {user.isAuth && (
             <>
-              <SidebarLink to="/Profile?tab=post" icon="fas fa-file-alt" label="Posts" active={tab === "post"} />
-              <SidebarLink to="/Profile?tab=user" icon="fa-solid fa-users" label="Users" active={tab === "user"} />
-              <SidebarLink to={`/getregistration?postslug=${postslug || ""}`} icon="fa-solid fa-users" label="Registration" active={tab === "postslug"} />
+              <SidebarLink
+                to="/Profile?tab=post"
+                icon="fas fa-file-alt"
+                label="Posts"
+                active={tab === "post"}
+              />
+              <SidebarLink
+                to="/Profile?tab=user"
+                icon="fa-solid fa-users"
+                label="Users"
+                active={tab === "user"}
+              />
+              <SidebarLink
+                to="/Profile?tab=postslug" 
+                icon="fa-solid fa-users"
+                label="Registrations"
+                active={tab === "postslug"}
+              />
             </>
           )}
-          <li className="p-4 hover:bg-gray-700 flex items-center cursor-pointer" onClick={handleSignOut}>
+
+          <li
+            className="p-4 hover:bg-gray-200 flex items-center cursor-pointer"
+            onClick={handleSignOut}
+          >
             <i className="fas fa-sign-out-alt mr-3"></i>
             Sign Out
           </li>
@@ -59,12 +80,16 @@ export default function Profilesidebar() {
     </div>
   );
 }
+
 const SidebarLink = ({ to, icon, label, active, children }) => (
-  <li className={`p-4 flex items-center ${active ? "bg-gray-700" : "hover:bg-gray-700"}`}>
-    <Link to={to} className="flex items-center w-full">
-      <i className={`${icon} mr-3`}></i>
-      {label}
-      {children}
-    </Link>
-  </li>
+  <Link
+    to={to}
+    className={` p-4 flex items-center ${
+      active ? "bg-gray-200" : "hover:bg-gray-200"
+    }`}
+  >
+    <i className={`${icon} mr-3`}></i>
+    {label}
+    {children}
+  </Link>
 );

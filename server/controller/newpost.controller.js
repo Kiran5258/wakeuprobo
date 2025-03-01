@@ -34,6 +34,8 @@ export const getpost = async (req, res, next) => {
 
     const filters = {
       ...(req.query.userId && { userId: req.query.userId }),
+      ...(req.query.category && { category: req.query.category }),
+      ...(req.query.price && { price: req.query.price }),
       ...(req.query.slug && { slug: req.query.slug }),
       ...(req.query.postId && { _id: req.query.postId }),
     };
@@ -78,8 +80,8 @@ export const deletepost=async(req,res,next)=>{
   }
 }
 export const updatepost=async(req,res,next)=>{
-  if(!req.user.isAuth ||req.user.id!==req.params.userId){
-    return next(errormsg(400,'You are not allowe to update the post'))
+  if (!req.user || req.user.id !== req.params.userId) {
+    return next(errormsg(403,"you are not allwod the page"))
   }
   try{
     const updatepost=await Post.findByIdAndUpdate(
@@ -88,8 +90,13 @@ export const updatepost=async(req,res,next)=>{
       $set:{
         title:req.body.title,
         content:req.body.content,
-        image:req.body.image
+        image:req.body.image,
+        category:req.body.category,
+        price:req.body.price
       }},{new:true})
+      if (!updatepost) {
+        return next(403,errormsg("post is not found"))
+      }
     res.status(200).json(updatepost)
     }catch(error){
     next(error)

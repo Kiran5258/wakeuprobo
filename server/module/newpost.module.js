@@ -19,8 +19,15 @@ const postSchema=new mongoose.Schema({
     },
     slug:{
         type:String,
-        unqiue:true,
+        unique:true,
         required:true
+    },category:{
+        type:String,
+        default:"uncategorized",
+    },
+    price:{
+        type:String,
+        required:true,
     },
 },{timestamps:true})
 

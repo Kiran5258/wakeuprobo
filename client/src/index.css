@@ -7,6 +7,7 @@
     position: relative;
     transition: all .5s;
 }
+
 .hamburger-top,
 .hamburger-middle,
 .hamburger-bottom{
@@ -14,7 +15,7 @@
     position: absolute;
     width: 24px;
     height: 4px;
-    background: #FFF;
+    background: #000;
     top: 0;
     left: 0;
     transform: rotate(0);

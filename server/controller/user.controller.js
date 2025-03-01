@@ -2,6 +2,7 @@ import { errormsg } from "../utilzation/404.js"
 import bcryptjs from "bcryptjs"
 import User from '../module/user.module.js'
 import RegistrationModel from "../module/Registration.module.js"
+import Post from "../module/newpost.module.js"
 export const test=(req,res)=>{
     res.json({message:"It is create..."})
 
@@ -62,48 +63,79 @@ export const signout=(req,res,next)=>{
         next(error)
     }
 }
-export const getuser=async(req,res,next)=>{
-    if(!req.user.isAuth){
-        return next(errormsg(400,"you are not allowed"))
+export const getuser = async (req, res, next) => {
+    if (!req.user?.isAuth) {
+      return next(errormsg(400,"you are not allowed"))
     }
-    try{
-    const initindex = parseInt(req.query.initindex) || 0;
-    const limit = parseInt(req.query.limit) || 9;
-    const sortdir = req.query.order === "asc" ? 1 : -1;
-    const userlist=await User.find().sort({createdAt:sortdir}).skip(initindex).limit(limit)
-    const withoutpassword=userlist.map((user)=>{
-        const {password,...rest}=user._doc
-        return rests
-    })
-    const totaluser=await User.countDocuments()
-    const now=new Date()
-    const oneMonth = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
-
-    const lastmonth = await User.countDocuments({
-      createdAt: { $gte: oneMonth, $lt: now },
-    });
-
-    res.status(200).json({
-      userlist:withoutpassword,
-      totaluser,
-      lastmonth,
-    });
-    }catch(error){
-        next(error)
-    }
-}
-export const getregistration = async (req, res, next) => {
-    const { postslug } =req.query;
-    if (!postslug){ 
-        return next(errormsg(400, "Post slug is required"));
-    }
-    if(!req.user.isAuth){
-        return next(errormsg(400,"you are not allowed"))
-    }
+  
     try {
-        const registrations = await RegistrationModel.find({ postslug });
-        return res.status(200).json({ registrations });
+      const initindex = Number(req.query.startindex) || 0;
+      const limit = Number(req.query.limit) || 9;
+      const sortdir = req.query.order === "asc" ? 1 : -1;
+      const userlist = await User.find()
+        .sort({ createdAt: sortdir })
+        .skip(initindex)
+        .limit(limit);
+      const withoutpassword = userlist.map((user) => {
+        const { password, ...rest } = user._doc;
+        return rest;
+      });
+      const totaluser = await User.countDocuments();
+      const now = new Date();
+      const oneMonth = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+  
+      const lastmonth = await User.countDocuments({
+        createdAt: { $gte: oneMonth, $lt: now },
+      });
+  
+      res.status(200).json({
+        userlist: withoutpassword,
+        totaluser,
+        lastmonth,
+      });
     } catch (error) {
-        next(errormsg(500, "Server error"));
+      next(error);
+    }
+  };
+  
+export const getAllRegistrations = async (req, res) => {
+    try {
+        if(!req.user.isAuth){
+            next(errormsg(404,"You not allow the page"))
+        }
+      const registrations = await RegistrationModel.find();
+      res.status(200).json({ success: true, registrations });
+    } catch (error) {
+      next(error)
+    }
+  };
+  export const getUserCourses = async (req, res, next) => {
+    try {
+        if (!req.user || !req.user.id) {
+            return next(errormsg(401, "Unauthorized: User ID missing"));
+        }
+        const user = await User.findById(req.user.id).select("email");
+        if (!user) {
+            return next(errormsg(404, "User not found"));
+        }
+        const userRegistrations = await RegistrationModel.find({ email: user.email });
+        if (!userRegistrations.length) {
+            return res.status(200).json({ success: true, courses: [] });
+        }
+
+        const courses = await Promise.all(
+            userRegistrations.map(async (registration) => {
+                const post = await Post.findOne({ slug: registration.postslug }).select("title slug image");
+                return post ? { title: post.title, slug: post.slug, image: post.image } : null;
+            })
+        );
+
+        res.status(200).json({
+            success: true,
+            courses: courses.filter((course) => course !== null),
+        });
+
+    } catch (error) {
+        next(error);
     }
 };

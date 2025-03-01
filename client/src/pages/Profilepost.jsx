@@ -34,7 +34,7 @@ export default function Profilepost() {
     const startinit = usepost.length;
     try {
       const res = await fetch(
-        `/server/postrouter/getpost/userId=${user._id}&initindex=${startinit}`
+        `/server/postrouter/getpost?userId=${user._id}&startIndex=${startinit}`
       );
       const data = await res.json();
       if (res.ok) {
@@ -48,8 +48,10 @@ export default function Profilepost() {
       setshowmore(false);
     }
   };
+
   const handledeletepost = async () => {
     setShowModal(false);
+    if (!postIdToDelete) return;
     try {
       const res = await fetch(
         `/server/postrouter/deletepost/${postIdToDelete}/${user._id}`,
@@ -58,15 +60,17 @@ export default function Profilepost() {
         }
       );
       const data = await res.json();
-      if (!res.ok) {
-        console.log(data.message);
-      } else {
+
+      if (res.ok) {
         setpost((prev) => prev.filter((post) => post._id !== postIdToDelete));
+      } else {
+        console.error("Failed to delete post:", data.message);
       }
     } catch (error) {
-      console.log(error.message);
+      console.log("Error deleting post:", error.message);
     }
   };
+
   return (
     <div className="w-full">
       {user?.isAuth && usepost.length > 0 ? (
@@ -79,6 +83,8 @@ export default function Profilepost() {
                   Post Image
                 </th>
                 <th className="py-6 px-6 text-left">Post Title</th>
+                <th className="py-6 px-6 text-left">Category</th>
+                <th className="py-6 px-6 text-left">Price</th>
                 <th className="py-6 px-6 text-left">Edit</th>
                 <th className="py-6 px-6 text-left">Delete</th>
               </tr>
@@ -89,19 +95,21 @@ export default function Profilepost() {
                   <td className="py-3 px-4">
                     {new Date(post.updatedAt).toLocaleDateString()}
                   </td>
-                  <td colSpan="2" className="py-3 px-4 w-[160px] h-[128px]">
+                  <td colSpan="2" className="py-3 px-4 w-40 h-30">
                     <img
                       src={post.image}
                       alt="Post"
-                      className="w-full h-full object-cover rounded-md"
+                      className="w-20 h-20 object-cover rounded-md border border-gray-300 shadow-sm"
                     />
                   </td>
+                  <td className="py-3 px-4">{post.price}</td>
+                  <td className="py-3 px-4">{post.category}</td>
                   <td className="py-3 px-4">
                     <Link to={`/course/${post.slug}`}>{post.title}</Link>
                   </td>
                   <td className="py-3 px-4">
                     <Link
-                      to={`/editpost/${user._id}`}
+                      to={`/editpost/${post._id}`}
                       className="text-blue-500 hover:underline "
                     >
                       Edit

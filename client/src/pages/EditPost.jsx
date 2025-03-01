@@ -31,6 +31,7 @@ export default function EditPost() {
 
         setposterror(null);
         setFormdata(data.posts[0]);
+        console.log(formdata)
       } catch (error) {
         console.log(error.message);
       }
@@ -111,7 +112,17 @@ export default function EditPost() {
             onChange={(e) =>
               setFormdata({ ...formdata, title: e.target.value })
             }
-          />
+            />
+             <select
+              className="border rounded-lg p-2 text-gray-700 mt-5 mr-0 bg-white shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={formdata.category}
+              onChange={(e) =>
+                setFormdata({ ...formdata, category: e.target.value })
+              }
+            >
+              <option value="technical">Technical</option>
+              <option value="non-technical">Non-Technical</option>
+            </select>
           <div className="px-3 py-2 flex my-3 items-center justify-between border-3 border-black border-dotted mr-0">
             <div className="my-3">
               <label className="flex items-center gap-3 cursor-pointer">
@@ -165,6 +176,17 @@ export default function EditPost() {
               className="w-full h-64 object-cover"
             />
           )}
+            <input
+            type="text"
+            id="price"
+            name="price"
+            value={formdata.price}
+            className="border rounded-lg p-2 text-gray-700 bg-white shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 space-y-4 mr-0 mb-4"
+            placeholder="Enter price"
+            onChange={(e) =>
+              setFormdata({ ...formdata, price: e.target.value })
+            }
+          />
           <ReactQuill
             theme="snow"
             className="h-72"

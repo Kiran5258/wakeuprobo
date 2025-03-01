@@ -8,7 +8,7 @@ const RegistrationSchema = new mongoose.Schema(
     email: {
       type: String,
       required: true,
-      unique: true, 
+      lowercase: true,
     },
     workcollegename: {
       type: String,
@@ -19,12 +19,13 @@ const RegistrationSchema = new mongoose.Schema(
       required: true,
     },
     postslug: {
-      type: String,
+      type:String,
       required: true,
+      lowercase: true,
     },
   },
   { timestamps: true }
 );
-
+RegistrationSchema.index({ email: 1, postslug: 1 }, { unique: true });
 const RegistrationModel = mongoose.model("Registration", RegistrationSchema);
 export default RegistrationModel;

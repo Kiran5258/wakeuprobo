@@ -4,8 +4,8 @@ import { useParams } from "react-router-dom";
 export default function Registration() {
   const { postslug } = useParams();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
-  const [postTitle, setPostTitle] = useState("");
+  const [error, setError] = useState("");
+  const [postTitle, setPostTitle] = useState("Loading...");
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -22,13 +22,15 @@ export default function Registration() {
         setLoading(true);
         const res = await fetch(`/server/postrouter/getpost?slug=${postslug}`);
         const data = await res.json();
-        if (!res.ok) {
-          setError(true);
+
+        if (!res.ok || !data.posts || data.posts.length === 0) {
+          setError("Post not found.");
+          setPostTitle("Unknown Post");
         } else {
-          setPostTitle(data.posts[0].title || "Unknown Title");
+          setPostTitle(data.posts[0]?.title || "Unknown Title");
         }
       } catch (error) {
-        setError(true);
+        setError("Failed to load post details.");
       } finally {
         setLoading(false);
       }
@@ -44,7 +46,7 @@ export default function Registration() {
     e.preventDefault();
     setIsSubmitting(true);
     setSuccessMessage("");
-    setError(false);
+    setError("");
 
     try {
       const res = await fetch("/server/auth/register", {
@@ -57,12 +59,13 @@ export default function Registration() {
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.message || "Registration failed");
+        throw new Error(data.message || "Something went to error");
       }
+
       setSuccessMessage("Registration successful! Confirmation email sent.");
       setFormData({ name: "", email: "", workcollegename: "", contactnumber: "" });
     } catch (error) {
-      setError(true);
+      setError(error.message);
     } finally {
       setIsSubmitting(false);
     }
@@ -80,7 +83,7 @@ export default function Registration() {
     <div className="max-w-lg mx-auto mt-20 bg-white p-6 shadow-md rounded-lg mb-20">
       <h2 className="text-2xl font-semibold text-center mb-4">Registration</h2>
 
-      {error && <p className="text-red-500 text-center">Something went wrong. Please try again.</p>}
+      {error && <p className="text-red-500 text-center">{error}</p>}
       {successMessage && <p className="text-green-600 text-center">{successMessage}</p>}
 
       <form className="space-y-4" onSubmit={handleSubmit}>

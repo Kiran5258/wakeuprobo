@@ -8,7 +8,13 @@ import { useNavigate } from "react-router-dom";
 export default function Createpost() {
   const [filename, setfilename] = useState("No file chosen");
   const [file, setfile] = useState(null);
-  const [formdata, setFormdata] = useState({});
+  const [formdata, setFormdata] = useState({
+    title: "",
+    content: "",
+    category: "technical",
+    price: "",
+    image: "",
+  });
   const [posterror, setposterror] = useState(null);
   const [imageFileUploading, setImageFileUploading] = useState(false);
   const [imageFileUploadError, setImageFileUploadError] = useState(null);
@@ -51,20 +57,23 @@ export default function Createpost() {
     try {
       const res = await fetch("/server/postrouter/createpost", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formdata),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formdata), 
       });
+
       const data = await res.json();
       if (!res.ok) {
-        setposterror(data.messsage);
+        setposterror(data.message || "An error occurred.");
         return;
       }
-      if (res.ok) {
-        setposterror(null);
-        navigate(`/course/${data.slug}`);
-      }
+
+      setposterror(null);
+      navigate(`/course/${data.slug}`);
     } catch (error) {
-      setposterror("Something unwanted");
+      console.error("Error in submission:", error);
+      setposterror("Something went wrong. Please try again.");
     }
   };
 
@@ -73,16 +82,28 @@ export default function Createpost() {
       <h1 className="text-center text-2xl font-semibold my-6">Create a Post</h1>
       <form className="flex flex-col space-x-4" onSubmit={handlesubmit}>
         <div className="flex flex-col justify-between space-x-4 box-border mr-0">
-          <input
-            type="text"
-            id="title"
-            placeholder="Title"
-            className="px-3 py-2 border mr-0 border-gray-300 rounded-md outline-none focus:ring-2 focus:ring-blue-500"
-            required
-            onChange={(e) =>
-              setFormdata({ ...formdata, title: e.target.value })
-            }
-          />
+          <div className="flex flex-col justify-between space-y-4 box-border mr-0">
+            <input
+              type="text"
+              id="title"
+              placeholder="Title"
+              className="px-3 py-2 border mr-0 border-gray-300 rounded-md outline-none focus:ring-2 "
+              required
+              onChange={(e) =>
+                setFormdata({ ...formdata, title: e.target.value })
+              }
+            />
+            <select
+              className="border rounded-lg p-2 text-gray-700 bg-white shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onChange={(e) =>
+                setFormdata({ ...formdata, category: e.target.value })
+              }
+            >
+              <option value="technical">Technical</option>
+              <option value="non-technical">Non-Technical</option>
+            </select>
+          </div>
+
           <div className="px-3 py-2 flex my-3 items-center justify-between border-3 border-black border-dotted mr-0">
             <div className="my-3">
               <label className="flex items-center gap-3 cursor-pointer">
@@ -136,11 +157,23 @@ export default function Createpost() {
               className="w-full h-64 object-cover"
             />
           )}
+          <input
+            type="text"
+            id="price"
+            name="price"
+            className="border rounded-lg p-2 text-gray-700 bg-white shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 space-y-4 mr-0 mb-4"
+            placeholder="Enter price"
+            onChange={(e) =>
+              setFormdata({ ...formdata, price: e.target.value })
+            }
+          />
           <ReactQuill
             theme="snow"
             className="h-72"
             placeholder="writing..."
-            onChange={(value) => setFormdata({ ...formdata, content: value })}
+            onChange={(value) =>
+              setFormdata((prev) => ({ ...prev, content: value || "" }))
+            }
           />
         </div>
         <button className="mt-15 w-full py-2 rounded flex justify-center items-center gap-2 cursor-pointer text-white bg-blue-500 hover:bg-blue-600">

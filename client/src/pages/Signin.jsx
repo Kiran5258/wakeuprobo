@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -10,18 +10,23 @@ import OAuth from "../components/OAuth";
 export default function Signin() {
   const [formdata, setform] = useState({});
   const { loading, error: errorMessage } = useSelector((state) => state.user);
-  const dispath = useDispatch();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+ 
   const Handlechange = (e) => {
+    e.preventDefault()
     setform({ ...formdata, [e.target.id]: e.target.value });
   };
+  useEffect(() => {
+    dispatch(signInFailure(null)); 
+  }, [dispatch]);
   const Handlesubmit = async (e) => {
     e.preventDefault();
     if (!formdata.email || !formdata.password) {
-      return dispath(signInFailure("All the field are required"));
+      return dispatch(signInFailure("All the field are required"));
     }
     try {
-      dispath(signIninit());
+      dispatch(signIninit());
       const res = await fetch("/server/auth/signin", {
         method: "POST",
         headers: {
@@ -31,14 +36,14 @@ export default function Signin() {
       });
       const data = await res.json();
       if (!res.ok) {
-        return dispatch(signInFailure(data.message || "Something went wrong"));
+        return dispatch(signInFailure(data.message || "Invaid Mail id or password"));
       }
       if (res.ok) {
-        dispath(signInsuccess(data));
+        dispatch(signInsuccess(data));
         navigate("/");
       }
     } catch (error) {
-      dispath(signInFailure(error.message));
+      dispatch(signInFailure(error.message));
     }
   };
   return (

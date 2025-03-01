@@ -1,4 +1,4 @@
-import { useState } from "react";
+import {  useState } from "react";
 import { useNavigate } from "react-router-dom";
 import OAuth from "../components/OAuth";
 
@@ -9,7 +9,7 @@ export default function Signup() {
   const navigate = useNavigate();
   const Handlechange = (e) => {
     setform({ ...formdata, [e.target.id]: e.target.value });
-  };
+  }
   const Handlesubmit = async (e) => {
     seterror(null)
     setloading(false)

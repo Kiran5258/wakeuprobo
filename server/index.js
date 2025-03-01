@@ -23,13 +23,14 @@ app.use(cors({
   origin: 'http://localhost:5173',
   credentials: true,
 }));
-app.listen(3000,()=>{
-    console.log( `http://localhost:${port}`)
-})
+
 app.use('/server/user',userroutes);
 app.use('/server/auth',authrouter);
 app.use('/server/postrouter',postrouter)
 
+app.listen(3000,()=>{
+  console.log( `http://localhost:${port}`)
+})
 app.use((error,req,res,next)=>{
   const status=error.statusCode||500
   const msg=error.message||'Internet Error'

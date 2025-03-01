@@ -14,12 +14,14 @@ import EditPost from './pages/EditPost'
 import Coursepost from './pages/Coursepost'
 import Registration from './pages/Registration'
 import PrivateRoute from './components/PrivateRoute'
-import AdminRegistrations from './pages/AdminRegistrations'
-
+import AdminRegistrations from './components/AdminRegistrations'
+import ScrollTop from './components/ScrollTop'
+import MyCourses from './pages/Mycourse'
 export default function App() {
   return (
    <BrowserRouter>
    <Header/>
+   <ScrollTop/>
    <Routes>
     <Route path="/" element={<Home/>}/>
     <Route path='/course/' element={<Course/>}/>
@@ -32,6 +34,7 @@ export default function App() {
     <Route path='/Blog'element={<Blog/>}/>
     <Route element={<Privateprofile/>}>
     <Route path='/Profile' element={<Profile/>}/>
+    <Route path='/mycourse' element={<MyCourses/>}/>
      <Route path="/getregistration"element={<AdminRegistrations/>}/>
     </Route>
     <Route element={<OnlyAdmin/>}>
